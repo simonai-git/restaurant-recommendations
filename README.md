@@ -1,36 +1,92 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Restaurant Recommendations Website
+
+A modern restaurant recommendations website built with Next.js 14, Prisma, and PostgreSQL.
+
+## Tech Stack
+
+- **Framework:** Next.js 14 (App Router)
+- **Language:** TypeScript
+- **Database:** PostgreSQL (Railway)
+- **ORM:** Prisma 7
+- **Styling:** Tailwind CSS
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
 
+- Node.js 18+
+- PostgreSQL database (we use Railway)
+
+### Installation
+
+1. Clone the repository:
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone https://github.com/simonai-git/restaurant-recommendations.git
+cd restaurant-recommendations
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Install dependencies:
+```bash
+npm install
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+3. Set up environment variables:
+```bash
+cp .env.example .env
+# Edit .env with your DATABASE_URL
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+4. Generate Prisma client:
+```bash
+npx prisma generate
+```
 
-## Learn More
+5. Run migrations:
+```bash
+npx prisma migrate dev
+```
 
-To learn more about Next.js, take a look at the following resources:
+6. Start the development server:
+```bash
+npm run dev
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Open [http://localhost:3000](http://localhost:3000) to view the app.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## API Routes
 
-## Deploy on Vercel
+- `GET /api/health` - Health check endpoint (tests database connection)
+- `GET /api/restaurants` - List restaurants (supports `?limit`, `?offset`, `?cuisine`)
+- `POST /api/restaurants` - Create a new restaurant
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Database Schema
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### Restaurant
+| Field | Type | Description |
+|-------|------|-------------|
+| id | String | Primary key (CUID) |
+| placeId | String | Google Places ID (unique) |
+| name | String | Restaurant name |
+| address | String | Full address |
+| lat | Float | Latitude |
+| lng | Float | Longitude |
+| rating | Float? | Average rating |
+| priceLevel | Int? | Price level (1-4) |
+| cuisineType | String? | Type of cuisine |
+| photos | Json | Array of photo URLs |
+| phone | String? | Phone number |
+| website | String? | Website URL |
+| hours | Json? | Operating hours |
+| createdAt | DateTime | Created timestamp |
+| updatedAt | DateTime | Updated timestamp |
+
+## Railway Configuration
+
+- **Project ID:** cc054446-1ff7-4d0e-b45c-aae9916e9639
+- **Environment ID:** a9bcdaa1-33ec-414b-bd5a-44e44dcbf809
+- **PostgreSQL Service ID:** 8c7dddbc-8769-436c-878c-cae8b65030a0
+- **External Host:** metro.proxy.rlwy.net:45627
+
+## License
+
+MIT
