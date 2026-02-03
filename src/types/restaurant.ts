@@ -1,5 +1,12 @@
 // Restaurant type definitions
 
+export interface HoursOfOperation {
+  day: string;
+  open: string;
+  close: string;
+  isClosed?: boolean;
+}
+
 export interface Restaurant {
   id: string;
   name: string;
@@ -10,6 +17,18 @@ export interface Restaurant {
   neighborhood: string;
   address?: string;
   reviewCount?: number;
+}
+
+// Extended restaurant details for the detail page
+export interface RestaurantDetail extends Restaurant {
+  photos: string[];
+  fullAddress: string;
+  phone: string;
+  website: string;
+  hours: HoursOfOperation[];
+  description: string;
+  latitude: number;
+  longitude: number;
 }
 
 export interface SearchFilters {

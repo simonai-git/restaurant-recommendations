@@ -3,11 +3,11 @@
 
 generator client {
   provider = "prisma-client-js"
-  output   = "../node_modules/.prisma/client"
 }
 
 datasource db {
   provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 model Restaurant {
@@ -24,8 +24,36 @@ model Restaurant {
   phone       String?
   website     String?
   hours       Json?
+  reviews     Json?    @default("[]")
+  openNow     Boolean? @map("open_now")
+  totalRatings Int?    @map("total_ratings")
   createdAt   DateTime @default(now()) @map("created_at")
   updatedAt   DateTime @updatedAt @map("updated_at")
 
   @@map("restaurants")
+}
+
+// Cache for search queries to reduce API calls
+model SearchCache {
+  id        String   @id @default(cuid())
+  query     String   @unique
+  results   Json     @default("[]")
+  expiresAt DateTime @map("expires_at")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([expiresAt])
+  @@map("search_cache")
+}
+
+// Cache for photo references
+model PhotoCache {
+  id             String   @id @default(cuid())
+  photoReference String   @unique @map("photo_reference")
+  imageData      Bytes    @map("image_data")
+  contentType    String   @map("content_type")
+  expiresAt      DateTime @map("expires_at")
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  @@index([expiresAt])
+  @@map("photo_cache")
 }
