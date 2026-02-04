@@ -1,19 +1,31 @@
 /**
  * Caching utilities for Google Places API results
+ * Uses Redis as fast cache layer, Postgres as persistent fallback
  */
 
 import { prisma } from './prisma';
+import { redisGet, redisSet, CACHE_TTL } from './redis';
 import type { PlaceSearchResult, PlaceDetails } from './google-places';
 
-// Cache duration in hours
+// Cache duration in hours (for Postgres)
 const CACHE_DURATION_HOURS = 24;
 
 /**
  * Get cached search results for a query
+ * Checks Redis first (fast), then Postgres (persistent)
  */
-export async function getCachedSearch(query: string): Promise<PlaceSearchResult[] | null> {
+export async function getCachedSearch(query: string): Promise<{ results: PlaceSearchResult[]; source: 'redis' | 'postgres' } | null> {
   const normalizedQuery = query.toLowerCase().trim();
+  const redisKey = `search:${normalizedQuery}`;
   
+  // 1. Check Redis first (fast)
+  const redisResults = await redisGet<PlaceSearchResult[]>(redisKey);
+  if (redisResults) {
+    console.log(`Cache hit (Redis): ${redisKey}`);
+    return { results: redisResults, source: 'redis' };
+  }
+
+  // 2. Check Postgres (slower but persistent)
   try {
     const cached = await prisma.searchCache.findUnique({
       where: { query: normalizedQuery }
@@ -32,7 +44,13 @@ export async function getCachedSearch(query: string): Promise<PlaceSearchResult[
       return null;
     }
 
-    return cached.results as unknown as PlaceSearchResult[];
+    const results = cached.results as unknown as PlaceSearchResult[];
+    
+    // Backfill Redis for next time
+    await redisSet(redisKey, results, CACHE_TTL.SEARCH);
+    console.log(`Cache hit (Postgres, backfilled Redis): ${redisKey}`);
+    
+    return { results, source: 'postgres' };
   } catch (error) {
     console.error('Failed to get cached search:', error);
     return null;
@@ -40,15 +58,21 @@ export async function getCachedSearch(query: string): Promise<PlaceSearchResult[
 }
 
 /**
- * Cache search results
+ * Cache search results in both Redis (fast) and Postgres (persistent)
  */
 export async function cacheSearchResults(
   query: string,
   results: PlaceSearchResult[]
 ): Promise<void> {
   const normalizedQuery = query.toLowerCase().trim();
+  const redisKey = `search:${normalizedQuery}`;
   const expiresAt = new Date(Date.now() + CACHE_DURATION_HOURS * 60 * 60 * 1000);
 
+  // Cache in Redis (fast, 1 hour TTL)
+  await redisSet(redisKey, results, CACHE_TTL.SEARCH);
+  console.log(`Cached in Redis: ${redisKey}`);
+
+  // Cache in Postgres (persistent, 24 hours)
   try {
     await prisma.searchCache.upsert({
       where: { query: normalizedQuery },
@@ -62,15 +86,27 @@ export async function cacheSearchResults(
         expiresAt
       }
     });
+    console.log(`Cached in Postgres: ${normalizedQuery}`);
   } catch (error) {
-    console.error('Failed to cache search results:', error);
+    console.error('Failed to cache search results in Postgres:', error);
   }
 }
 
 /**
  * Get cached restaurant details by placeId
+ * Checks Redis first (fast), then Postgres (persistent)
  */
-export async function getCachedRestaurant(placeId: string): Promise<PlaceDetails | null> {
+export async function getCachedRestaurant(placeId: string): Promise<{ details: PlaceDetails; source: 'redis' | 'postgres' } | null> {
+  const redisKey = `place:${placeId}`;
+
+  // 1. Check Redis first (fast)
+  const redisResult = await redisGet<PlaceDetails>(redisKey);
+  if (redisResult) {
+    console.log(`Cache hit (Redis): ${redisKey}`);
+    return { details: redisResult, source: 'redis' };
+  }
+
+  // 2. Check Postgres (slower but persistent)
   try {
     const restaurant = await prisma.restaurant.findUnique({
       where: { placeId }
@@ -87,7 +123,7 @@ export async function getCachedRestaurant(placeId: string): Promise<PlaceDetails
     }
 
     // Map database record to PlaceDetails format
-    return {
+    const details: PlaceDetails = {
       placeId: restaurant.placeId,
       name: restaurant.name,
       address: restaurant.address,
@@ -103,6 +139,12 @@ export async function getCachedRestaurant(placeId: string): Promise<PlaceDetails
       hours: restaurant.hours as any || undefined,
       reviews: (restaurant.reviews as any[]) || []
     };
+
+    // Backfill Redis for next time
+    await redisSet(redisKey, details, CACHE_TTL.PLACE);
+    console.log(`Cache hit (Postgres, backfilled Redis): ${redisKey}`);
+
+    return { details, source: 'postgres' };
   } catch (error) {
     console.error('Failed to get cached restaurant:', error);
     return null;
@@ -110,9 +152,16 @@ export async function getCachedRestaurant(placeId: string): Promise<PlaceDetails
 }
 
 /**
- * Cache restaurant details
+ * Cache restaurant details in both Redis (fast) and Postgres (persistent)
  */
 export async function cacheRestaurantDetails(details: PlaceDetails): Promise<void> {
+  const redisKey = `place:${details.placeId}`;
+
+  // Cache in Redis (fast, 24 hour TTL)
+  await redisSet(redisKey, details, CACHE_TTL.PLACE);
+  console.log(`Cached in Redis: ${redisKey}`);
+
+  // Cache in Postgres (persistent)
   try {
     await prisma.restaurant.upsert({
       where: { placeId: details.placeId },
@@ -148,8 +197,9 @@ export async function cacheRestaurantDetails(details: PlaceDetails): Promise<voi
         totalRatings: details.totalRatings
       }
     });
+    console.log(`Cached in Postgres: ${details.placeId}`);
   } catch (error) {
-    console.error('Failed to cache restaurant details:', error);
+    console.error('Failed to cache restaurant details in Postgres:', error);
   }
 }
 

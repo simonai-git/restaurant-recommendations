@@ -21,15 +21,15 @@ export async function GET(
       );
     }
 
-    // Check cache first
+    // Check cache first (Redis → Postgres)
     const cached = await getCachedRestaurant(placeId);
     if (cached) {
       return NextResponse.json({
         restaurant: {
-          ...cached,
-          cuisineType: extractCuisineType(cached.types)
+          ...cached.details,
+          cuisineType: extractCuisineType(cached.details.types)
         },
-        source: 'cache'
+        source: cached.source // 'redis' or 'postgres'
       });
     }
 
