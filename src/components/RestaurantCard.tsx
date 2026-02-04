@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import Link from 'next/link';
 import { Restaurant } from '@/types/restaurant';
 import StarRating from './StarRating';
 
@@ -13,8 +14,9 @@ function getPriceDisplay(level: number): string {
 
 export default function RestaurantCard({ restaurant }: RestaurantCardProps) {
   return (
-    <article className="group bg-white dark:bg-gray-800 rounded-2xl overflow-hidden shadow-md 
-                        hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+    <Link href={`/restaurant/${restaurant.id}`}>
+      <article className="group bg-white dark:bg-gray-800 rounded-2xl overflow-hidden shadow-md 
+                        hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer">
       {/* Restaurant Photo */}
       <div className="relative h-48 sm:h-52 overflow-hidden">
         <Image
@@ -85,5 +87,6 @@ export default function RestaurantCard({ restaurant }: RestaurantCardProps) {
         </div>
       </div>
     </article>
+    </Link>
   );
 }
