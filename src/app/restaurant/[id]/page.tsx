@@ -420,31 +420,52 @@ export default function RestaurantDetailPage() {
 
             {/* Quick Actions */}
             <section className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm animate-fade-in">
+              {/* Primary Action: Book a Table */}
               <a
-                href={`tel:${restaurant.phone.replace(/[^\d+]/g, '')}`}
+                href={`https://www.opentable.com/s?term=${encodeURIComponent(restaurant.name + ' ' + restaurant.neighborhood + ' San Francisco')}`}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="w-full inline-flex items-center justify-center gap-2 bg-orange-500 hover:bg-orange-600 
                            text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200 mb-3
                            active:scale-[0.98] hover:shadow-lg hover:shadow-orange-500/25"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 </svg>
-                Call Now
+                Book a Table
               </a>
-              <a
-                href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(restaurant.fullAddress)}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-full inline-flex items-center justify-center gap-2 bg-gray-100 hover:bg-gray-200 
-                           dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-900 dark:text-white 
-                           font-semibold py-3 px-6 rounded-xl transition-all duration-200
-                           active:scale-[0.98]"
-              >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
-                </svg>
-                Get Directions
-              </a>
+              
+              {/* Secondary Actions: Call + Directions */}
+              <div className="grid grid-cols-2 gap-3">
+                <a
+                  href={`tel:${restaurant.phone.replace(/[^\d+]/g, '')}`}
+                  className="inline-flex items-center justify-center gap-2 bg-gray-100 hover:bg-gray-200 
+                             dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-900 dark:text-white 
+                             font-semibold py-3 px-4 rounded-xl transition-all duration-200
+                             active:scale-[0.98]"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                  </svg>
+                  <span className="hidden sm:inline">Call</span>
+                  <span className="sm:hidden">Call</span>
+                </a>
+                <a
+                  href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(restaurant.fullAddress)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center justify-center gap-2 bg-gray-100 hover:bg-gray-200 
+                             dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-900 dark:text-white 
+                             font-semibold py-3 px-4 rounded-xl transition-all duration-200
+                             active:scale-[0.98]"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+                  </svg>
+                  <span className="hidden sm:inline">Directions</span>
+                  <span className="sm:hidden">Map</span>
+                </a>
+              </div>
             </section>
           </div>
         </div>
