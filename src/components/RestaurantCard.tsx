@@ -5,6 +5,7 @@ import StarRating from './StarRating';
 
 interface RestaurantCardProps {
   restaurant: Restaurant;
+  index?: number;
 }
 
 // Convert price level number to dollar signs
@@ -12,11 +13,21 @@ function getPriceDisplay(level: number): string {
   return '$'.repeat(level);
 }
 
-export default function RestaurantCard({ restaurant }: RestaurantCardProps) {
+export default function RestaurantCard({ restaurant, index = 0 }: RestaurantCardProps) {
+  // Stagger animation delay based on index
+  const animationDelay = `${index * 0.05}s`;
+
   return (
     <Link href={`/restaurant/${restaurant.id}`}>
-      <article className="group bg-white dark:bg-gray-800 rounded-2xl overflow-hidden shadow-md 
-                        hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer">
+      <article 
+        className="group bg-white dark:bg-gray-800 rounded-2xl overflow-hidden shadow-md 
+                   hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer
+                   animate-fade-in opacity-0"
+        style={{ 
+          animationDelay,
+          animationFillMode: 'forwards'
+        }}
+      >
       {/* Restaurant Photo */}
       <div className="relative h-48 sm:h-52 overflow-hidden">
         <Image

@@ -3,6 +3,7 @@
 import { useState, useCallback } from 'react';
 import HeroSection from '@/components/HeroSection';
 import ResultsGrid from '@/components/ResultsGrid';
+import Header from '@/components/Header';
 import { mockRestaurants } from '@/lib/mock-data';
 import { Restaurant } from '@/types/restaurant';
 
@@ -38,7 +39,10 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-900">
+    <div className="min-h-screen bg-white dark:bg-gray-900 transition-colors duration-300">
+      {/* Header with Theme Toggle - transparent on hero */}
+      <Header variant="transparent" />
+
       {/* Hero Section with Search */}
       <HeroSection onSearch={handleSearch} isLoading={isLoading} />
 
@@ -52,7 +56,7 @@ export default function Home() {
       </main>
 
       {/* Footer */}
-      <footer className="bg-gray-50 dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700">
+      <footer className="bg-gray-50 dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 transition-colors duration-300">
         <div className="max-w-6xl mx-auto px-4 py-8">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-2">

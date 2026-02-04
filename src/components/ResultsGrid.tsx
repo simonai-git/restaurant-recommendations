@@ -47,8 +47,8 @@ export default function ResultsGrid({ restaurants, isLoading = false, searchQuer
 
       {/* Results Grid - Mobile first responsive */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {restaurants.map((restaurant) => (
-          <RestaurantCard key={restaurant.id} restaurant={restaurant} />
+        {restaurants.map((restaurant, index) => (
+          <RestaurantCard key={restaurant.id} restaurant={restaurant} index={index} />
         ))}
       </div>
     </section>

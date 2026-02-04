@@ -108,9 +108,10 @@ export default function SearchBar({ onSearch, isLoading = false }: SearchBarProp
           disabled={isLoading}
           className="absolute right-2 top-1/2 -translate-y-1/2 px-6 py-2 
                      bg-orange-500 hover:bg-orange-600 text-white font-semibold 
-                     rounded-full transition-colors duration-200
+                     rounded-full transition-all duration-200
                      disabled:bg-orange-300 disabled:cursor-not-allowed
-                     focus:outline-none focus:ring-2 focus:ring-orange-300"
+                     focus:outline-none focus:ring-2 focus:ring-orange-300
+                     active:scale-95 hover:shadow-lg hover:shadow-orange-500/30"
         >
           {isLoading ? (
             <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">

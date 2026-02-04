@@ -24,8 +24,8 @@ export default function HeroSection({ onSearch, isLoading }: HeroSectionProps) {
         </svg>
       </div>
 
-      {/* Content */}
-      <div className="relative px-4 py-16 sm:py-24 lg:py-32">
+      {/* Content - extra top padding for fixed header */}
+      <div className="relative px-4 pt-24 pb-16 sm:pt-32 sm:pb-24 lg:pt-40 lg:pb-32">
         <div className="max-w-4xl mx-auto text-center">
           {/* Logo / Icon */}
           <div className="mb-6 inline-flex items-center justify-center w-16 h-16 
@@ -72,7 +72,8 @@ export default function HeroSection({ onSearch, isLoading }: HeroSectionProps) {
                 onClick={() => onSearch(term)}
                 className="text-sm text-white/90 hover:text-white 
                            bg-white/10 hover:bg-white/20 
-                           px-3 py-1 rounded-full transition-colors"
+                           px-3 py-1 rounded-full transition-all duration-200
+                           hover:scale-105 active:scale-95"
               >
                 {term}
               </button>
